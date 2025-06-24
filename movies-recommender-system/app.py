@@ -3,6 +3,15 @@ import streamlit as st
 import pickle
 import requests
 
+def load_pickle_from_gdrive(file_id):
+    url = f"https://drive.google.com/uc?export=download&id={file_id}"
+    response = requests.get(url)
+    return pickle.loads(response.content)
+
+movies_dict = load_pickle_from_gdrive("1ON8FcotBIROxNjvyOdivE1YR3af647B4")
+similarity = load_pickle_from_gdrive("1ezYsifBKcMS2Pn940xIIb80aSLcZezfg")
+movies = pd.DataFrame(movies_dict)
+
 def fetch_poster(movie_id):
     response = requests.get("https://api.themoviedb.org/3/movie/{}?api_key=5c2de3d0378461bdd3dd5c90bf1c350b&language=en-US".format(movie_id))
     data = response.json()
@@ -23,11 +32,6 @@ def recommend(movie):
         #fetch poster from api
         recommended_movies_posters.append(fetch_poster(movie_id))
     return recommended_movies,recommended_movies_posters
-
-movies_dict = pickle.load(open('movie_dict.pkl', 'rb'))
-movies = pd.DataFrame(movies_dict)
-
-similarity = pickle.load(open('similarity.pkl', 'rb'))
 
 st.title("Movie Recommender System")
 
